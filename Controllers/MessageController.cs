@@ -15,7 +15,7 @@ namespace MessageBoard.Controllers
       _db = db;
     }
 
-    // GET api/messages
+    // GET: api/messages
     [HttpGet]
     public async Task<ActionResult<IEnumerable<<Message>>> Get()
     {
@@ -23,5 +23,19 @@ namespace MessageBoard.Controllers
 
       return await query.ToListAsync();
     }
+
+    // GET: api/Message/7
+    [HttpGet("{id}")]
+    public async Task<ActionResult<Message>> GetMessage(int id)
+    {
+      Message message = await _db.Messages.FindAsync(id);
+      if (message == null)
+      {
+        return NotFound();
+      }
+      return message;
+    }
+
+    
   }
 }
