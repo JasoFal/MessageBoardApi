@@ -75,5 +75,19 @@ namespace MessageBoard.Controllers
     {
       return _db.Messages.Any(e => e.MessageId == id);
     }
+
+    // DELETE http://localhost:5000/api/messages/{id}
+    [HttpDelete("{id}")]
+    public async Task<IActionResult> DeleteMessage(int id)
+    {
+      Message message = await _db.Messages.FindAsync(id);
+      if (message == null)
+      {
+        return NotFound();
+      }
+      _db.Messages.Remove(message);
+      await _db.SaveChangesAsync();
+      return NoContent();
+    }
   }
 }
