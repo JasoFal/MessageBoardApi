@@ -17,9 +17,14 @@ namespace MessageBoard.Controllers
 
     // GET: api/messages
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<<Message>>> Get()
+    public async Task<ActionResult<IEnumerable<Message>>> Get(string group)
     {
       IQueryable<Message> query = _db.Messages.AsQueryable();
+
+      if (group != null)
+      {
+        query = query.Where(entry => entry.Group == group);
+      }
 
       return await query.ToListAsync();
     }
@@ -55,7 +60,7 @@ namespace MessageBoard.Controllers
       _db.Messages.Update(message);
       try
       {
-        await _db.SaveChanges();
+        await _db.SaveChangesAsync();
       }
       catch
       {
