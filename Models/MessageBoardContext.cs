@@ -9,5 +9,13 @@ namespace MessageBoard.Models
     public MessageBoardContext(DbContextOptions<MessageBoardContext> options) : base(options)
     {
     }
+
+    // protected override void OnModelCreating(ModelBuilder builder)
+    // {
+    //   builder.Entity<Message>()
+    //     .hasData(
+    //       new Message
+    //   );
+    // }
   }
 }
