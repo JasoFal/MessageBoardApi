@@ -7,5 +7,10 @@ namespace MessageBoard
     public string Group { get; set; }
     public DateTime PostTime { get; set; }
     public string user_name { get; set; }
+
+    public Message()
+    {
+      PostTime = System.DateTime.Now;
+    }
   }
 }
