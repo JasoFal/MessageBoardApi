@@ -26,10 +26,10 @@ namespace MessageBoard.Controllers
         query = query.Where(entry => entry.Group == group);
       }
 
-      // if (minimumPostDate != null && maximumPostDate != null)
-      // {
-      //   query = query.Where(entry => DateTime.Compare(entry.PostTime, DateTime.Parse(minimumPostDate)) >= 0 && DateTime.Compare(entry.PostTime, DateTime.Parse(maximumPostDate)) <= 0);
-      // }
+      if (minimumPostDate != null && maximumPostDate != null)
+      {
+        query = query.Where(entry => DateTime.Compare(entry.PostTime, DateTime.Parse(minimumPostDate)) >= 0 && DateTime.Compare(entry.PostTime, DateTime.Parse(maximumPostDate)) <= 0);
+      }
 
       return await query.ToListAsync();
     }
