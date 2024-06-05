@@ -17,7 +17,7 @@ namespace MessageBoard.Controllers
 
     // GET: api/messages
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Message>>> Get(string group)
+    public async Task<ActionResult<IEnumerable<Message>>> Get([FromQuery] string group, string minimumPostDate, string maximumPostDate)
     {
       IQueryable<Message> query = _db.Messages.AsQueryable();
 
@@ -25,6 +25,11 @@ namespace MessageBoard.Controllers
       {
         query = query.Where(entry => entry.Group == group);
       }
+
+      // if (minimumPostDate != null && maximumPostDate != null)
+      // {
+      //   query = query.Where(entry => DateTime.Compare(entry.PostTime, DateTime.Parse(minimumPostDate)) >= 0 && DateTime.Compare(entry.PostTime, DateTime.Parse(maximumPostDate)) <= 0);
+      // }
 
       return await query.ToListAsync();
     }
@@ -41,6 +46,7 @@ namespace MessageBoard.Controllers
       return message;
     }
 
+    // POST: api/messages
     [HttpPost]
     public async Task<ActionResult<Message>> Post(Message message)
     {
@@ -49,11 +55,11 @@ namespace MessageBoard.Controllers
       return CreatedAtAction(nameof(GetMessage), new { id = message.MessageId }, message);
     }
 
-    // PUT: http://localhost:5000/api/messages/{id}
+    // PUT: http://localhost:5000/api/messages/{id}?user_name={user_name}
     [HttpPut("{id}")]
-    public async Task<IActionResult> Put(int id, Message message)
+    public async Task<IActionResult> Put(int id, Message message, string user_name)
     {
-      if (id != message.MessageId)
+      if (id != message.MessageId || user_name != message.user_name)
       {
         return BadRequest();
       }
@@ -81,17 +87,27 @@ namespace MessageBoard.Controllers
       return _db.Messages.Any(e => e.MessageId == id);
     }
 
-    // DELETE http://localhost:5000/api/messages/{id}
+    // DELETE: http://localhost:5000/api/messages/{id}/?user_name={user_name}
     [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteMessage(int id)
+    public async Task<IActionResult> DeleteMessage(int id, string user_name)
     {
       Message message = await _db.Messages.FindAsync(id);
       if (message == null)
       {
         return NotFound();
       }
-      _db.Messages.Remove(message);
-      await _db.SaveChangesAsync();
+      else
+      {
+        if (message.user_name != user_name)
+        {
+          return Unauthorized();
+        }
+        else
+        {
+          _db.Messages.Remove(message);
+          await _db.SaveChangesAsync();
+        }
+      }
       return NoContent();
     }
   }
