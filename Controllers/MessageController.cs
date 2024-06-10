@@ -17,7 +17,7 @@ namespace MessageBoard.Controllers
 
     // GET: api/messages
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<Message>>> Get([FromQuery] string group, string minimumPostDate, string maximumPostDate)
+    public async Task<ActionResult<IEnumerable<Message>>> Get([FromQuery] string group, string minimumPostDate, string maximumPostDate, int pageNumber = 1)
     {
       IQueryable<Message> query = _db.Messages.AsQueryable();
 
@@ -31,12 +31,15 @@ namespace MessageBoard.Controllers
         query = query.Where(entry => DateTime.Compare(entry.PostTime, DateTime.Parse(minimumPostDate)) >= 0 && DateTime.Compare(entry.PostTime, DateTime.Parse(maximumPostDate)) <= 0);
       }
 
-      return await query.ToListAsync();
+      return await query.OrderBy(entry => entry.PostTime)
+        .Skip((pageNumber - 1) * 10)
+        .Take(10)
+        .ToListAsync();
     }
 
     // GET: api/Message/7
     [HttpGet("{id}")]
-    public async Task<ActionResult<Message>> GetMessage(int id)
+    public async Task<ActionResult<Message>> GetMessage([FromRoute] int id)
     {
       Message message = await _db.Messages.FindAsync(id);
       if (message == null)
